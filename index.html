@@ -331,6 +331,56 @@
             transform: scale(0.98);
         }
 
+        /* --- MOBILE RESPONSIVE UI FOR CHATBOT --- */
+        @media screen and (max-width: 480px) {
+
+            /* Launcher ko thoda chota aur neat karo */
+            .chat-widget-launcher {
+                bottom: 20px;
+                right: 20px;
+                padding: 10px 16px;
+            }
+
+            /* Chat window ko mobile par FULLSCREEN karo */
+            .chat-window {
+                bottom: 0 !important;
+                right: 0 !important;
+                width: 100% !important;
+                height: 100% !important;
+                border-radius: 0 !important;
+                /* Mobile par rounded corners acche nahi lagte */
+                border: none !important;
+            }
+
+            /* Active hone par smooth full-screen pop */
+            .chat-window.active {
+                transform: translateY(0) scale(1) !important;
+            }
+
+            /* Hero section ki typography mobile ke liye adjust karo */
+            .hero h1 {
+                font-size: 38px !important;
+                margin-top: 40px;
+            }
+
+            .hero p {
+                font-size: 16px !important;
+            }
+
+            /* Quick replies ko scrollable karo taaki screen se bahar na jayein */
+            .quick-replies {
+                overflow-x: auto !important;
+                white-space: nowrap !important;
+                flex-wrap: nowrap !important;
+                padding: 0 15px 5px 15px !important;
+            }
+
+            .quick-replies::-webkit-scrollbar {
+                display: none;
+                /* Scrollbar hide karo par scrolling chalu rahe */
+            }
+        }
+
         /* Animation Performance Timelines */
         @keyframes slideUp {
             from {
