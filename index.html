@@ -341,6 +341,11 @@
                 padding: 10px 16px;
             }
 
+            /* FIXED GLITCH: Jab chatbox open active ho, toh bubble button hide ho jaye */
+            body:has(.chat-window.active) .chat-widget-launcher {
+                display: none !important;
+            }
+
             /* Chat window ko mobile par FULLSCREEN karo */
             .chat-window {
                 bottom: 0 !important;
