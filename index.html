@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vastra Premium | Luxury Clothing</title>
+    <style>
+        :root {
+            --bg-color: #0b0b0f;
+            --glass-bg: rgba(20, 20, 25, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --accent-blue: #0071e3;
+            --text-main: #f5f5f7;
+            --text-muted: #86868b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 200vh;
+            background-image: radial-gradient(circle at 50% 0%, #1d1d26, transparent 50%);
+            overflow-x: hidden;
+        }
+
+        /* --- Dummy Fashion Website UI --- */
+        header {
+            padding: 30px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--glass-border);
+            position: sticky;
+            top: 0;
+            background: rgba(11, 11, 15, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 10;
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 24px;
+            letter-spacing: 2px;
+        }
+
+        nav a {
+            color: var(--text-main);
+            text-decoration: none;
+            margin-left: 30px;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .hero {
+            max-width: 1200px;
+            margin: 80px auto;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        .hero h1 {
+            font-size: 64px;
+            font-weight: 600;
+            letter-spacing: -2px;
+            margin-bottom: 20px;
+        }
+
+        .hero p {
+            color: var(--text-muted);
+            font-size: 20px;
+            margin-bottom: 40px;
+        }
+
+        /* --- FLOATING CHAT WIDGET SYSTEM --- */
+
+        .chat-widget-launcher {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 12px 20px;
+            background: var(--accent-blue);
+            border-radius: 30px;
+            box-shadow: 0 8px 24px rgba(0, 113, 227, 0.4);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 9999;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .chat-widget-launcher:hover {
+            transform: scale(1.05) translateY(-2px);
+            box-shadow: 0 12px 30px rgba(0, 113, 227, 0.6);
+        }
+
+        .launcher-robot-logo {
+            font-size: 20px;
+            line-height: 1;
+        }
+
+        .launcher-text {
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: -0.2px;
+            white-space: nowrap;
+        }
+
+        /* Chat Window Container */
+        .chat-window {
+            position: fixed;
+            bottom: 95px;
+            right: 30px;
+            width: 380px;
+            height: 550px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 9998;
+            opacity: 0;
+            transform: translateY(20px) scale(0.95);
+            pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .chat-window.active {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+
+        .chat-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.2);
+            z-index: 2;
+        }
+
+        .header-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #30d158;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #30d158;
+        }
+
+        .chat-header h2 {
+            font-size: 16px;
+            font-weight: 500;
+            letter-spacing: -0.3px;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 20px;
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .close-btn:hover {
+            color: white;
+        }
+
+        /* Chat Messages Wrapper */
+        .chat-messages-container {
+            flex: 1;
+            position: relative;
+            /* Token tracking position mapping */
+            overflow: hidden;
+        }
+
+        .chat-messages {
+            width: 100%;
+            height: 100%;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            scroll-behavior: smooth;
+        }
+
+        .chat-messages::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: var(--glass-border);
+            border-radius: 2px;
+        }
+
+        /* Base Message Style */
+        .message {
+            max-width: 85%;
+            padding: 10px 14px;
+            border-radius: 14px;
+            font-size: 14px;
+            line-height: 1.4;
+            word-wrap: break-word;
+            position: relative;
+        }
+
+        /* User Message with Pop bounce */
+        .user-message {
+            background: var(--accent-blue);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 2px;
+            animation: bubblePop 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        /* Bot Message Style */
+        .bot-message {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            align-self: flex-start;
+            border-bottom-left-radius: 2px;
+            animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        /* --- TELEGRAM FLYING ANIMATION ENGINE --- */
+        .flying-token {
+            position: absolute;
+            background: var(--accent-blue);
+            color: white;
+            padding: 10px 14px;
+            border-radius: 14px;
+            font-size: 14px;
+            line-height: 1.4;
+            pointer-events: none;
+            z-index: 99;
+            transform-origin: bottom right;
+            box-shadow: 0 4px 12px rgba(0, 71, 227, 0.2);
+        }
+
+        /* Typing Indicator Mechanics */
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 4px 6px;
+            align-self: flex-start;
+        }
+
+        .dot {
+            width: 5px;
+            height: 5px;
+            background: var(--text-muted);
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+
+        .dot:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+
+        .dot:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+
+        /* Input Deck styling */
+        .chat-input-area {
+            padding: 16px 20px;
+            border-top: 1px solid var(--glass-border);
+            display: flex;
+            gap: 10px;
+            background: rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 5;
+        }
+
+        .chat-input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            padding: 10px 14px;
+            color: var(--text-main);
+            font-size: 14px;
+            outline: none;
+            transition: border 0.2s ease;
+        }
+
+        .chat-input:focus {
+            border-color: var(--accent-blue);
+        }
+
+        .send-btn {
+            background: var(--text-main);
+            color: var(--bg-color);
+            border: none;
+            border-radius: 10px;
+            padding: 0 16px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .send-btn:hover {
+            background: white;
+            transform: scale(1.02);
+        }
+
+        .send-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* Animation Performance Timelines */
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes bubblePop {
+            from {
+                transform: scale(0.85);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes bounce {
+
+            0%,
+            80%,
+            100% {
+                transform: scale(0);
+            }
+
+            40% {
+                transform: scale(1.0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Dummy Website Markup -->
+    <header>
+        <div class="logo">VASTRA</div>
+        <nav>
+            <a href="#">Summer '26</a>
+            <a href="#">Collections</a>
+            <a href="#">Our Story</a>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <h1>Redefining Premium Comfort</h1>
+        <p>Explore our latest drop of bespoke cotton threads designed for the minimalist soul. Scroll down to discover
+            more.</p>
+    </section>
+
+    <!-- FLOATING CHAT WIDGET INTERFACE -->
+    <div class="chat-widget-launcher" id="chatLauncher">
+        <span class="launcher-robot-logo">🤖</span>
+        <span class="launcher-text">Vastra AI</span>
+    </div>
+
+    <div class="chat-window" id="chatWindow">
+        <div class="chat-header">
+            <div class="header-info">
+                <div class="status-dot"></div>
+                <h2>Vastra AI</h2>
+            </div>
+            <button class="close-btn" id="closeBtn">&times;</button>
+        </div>
+
+        <!-- Messages Area Container for Layer Coordinates -->
+        <div class="chat-messages-container" id="messagesContainer">
+            <div class="chat-messages" id="chatMessages">
+                <div class="message bot-message">Welcome to Vastra! How can I help you with your order status or returns
+                    today?</div>
+            </div>
+        </div>
+
+        <div class="quick-replies"
+            style="display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; padding: 0 10px;">
+            <button onclick="sendQuickReply('Track my order', this)"
+                style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); color: #fff; padding: 6px 14px; border-radius: 20px; font-size: 13px; cursor: pointer; transition: all 0.3s ease; font-family: -apple-system, BlinkMacSystemFont, sans-serif;">📦
+                Track Order</button>
+            <button onclick="sendQuickReply('What is your return policy?', this)"
+                style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); color: #fff; padding: 6px 14px; border-radius: 20px; font-size: 13px; cursor: pointer; transition: all 0.3s ease; font-family: -apple-system, BlinkMacSystemFont, sans-serif;">🔄
+                Return Policy</button>
+            <button onclick="sendQuickReply('Show me active discount codes', this)"
+                style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); color: #fff; padding: 6px 14px; border-radius: 20px; font-size: 13px; cursor: pointer; transition: all 0.3s ease; font-family: -apple-system, BlinkMacSystemFont, sans-serif;">🏷️
+                Offers</button>
+            <button onclick="sendQuickReply('I want to talk to a manager', this)"
+                style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); color: #fff; padding: 6px 14px; border-radius: 20px; font-size: 13px; cursor: pointer; transition: all 0.3s ease; font-family: -apple-system, BlinkMacSystemFont, sans-serif;">💬
+                Contact Manager</button>
+        </div>
+
+        <div class="chat-input-area" id="inputArea">
+            <input type="text" class="chat-input" id="chatInput" placeholder="Type a message..." autocomplete="off">
+            <button class="send-btn" id="sendBtn">Send</button>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================
+        // SAFE DOM ELEMENT SELECTION (Null-safe for all browsers)
+        // ============================================================
+        const chatLauncher = document.getElementById('chatLauncher');
+        const chatWindow = document.getElementById('chatWindow');
+        const closeBtn = document.getElementById('closeBtn');
+        const messagesContainer = document.getElementById('messagesContainer');
+        const chatMessages = document.getElementById('chatMessages');
+        const chatInput = document.getElementById('chatInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const inputArea = document.getElementById('inputArea');
+
+        // ============================================================
+        // SMART BACKEND URL DETECTION
+        // Desktop: uses 127.0.0.1 (localhost)
+        // Mobile on same WiFi: uses the computer's LAN IP automatically
+        // ============================================================
+        const LAN_IP = '172.16.39.124'; // Mac ka real LAN IP
+        const isMobile = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent);
+        const BACKEND_URL = isMobile
+            ? `http://${LAN_IP}:8000/chat`
+            : 'http://127.0.0.1:8000/chat';
+
+        chatLauncher.addEventListener('click', () => {
+            chatWindow.classList.toggle('active');
+            if (chatWindow.classList.contains('active')) {
+                chatInput.focus();
+            }
+        });
+
+        closeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            chatWindow.classList.remove('active');
+        });
+
+        // Telegram Custom Fly Mechanics Engine
+        function animateMessageFly(text, targetBubble) {
+            // 1. Get positions of Input Deck and the newly generated target bubble
+            const containerRect = messagesContainer.getBoundingClientRect();
+            const inputRect = chatInput.getBoundingClientRect();
+            const targetRect = targetBubble.getBoundingClientRect();
+
+            // 2. Spawn a lightweight pseudo token matching styling
+            const token = document.createElement('div');
+            token.classList.add('flying-token');
+            token.innerText = text;
+
+            // Set initial location (Exactly where the input bar sits right now)
+            token.style.left = `${inputRect.left - containerRect.left}px`;
+            token.style.top = `${inputRect.top - containerRect.top}px`;
+            token.style.width = `${inputRect.width}px`;
+            token.style.height = `${inputRect.height}px`;
+            token.style.opacity = '0.7';
+
+            messagesContainer.appendChild(token);
+
+            // Hide real bubble temporarily while the animation flies through space
+            targetBubble.style.opacity = '0';
+
+            // Calculate exact target delta positions inside viewport limits
+            const targetLeft = targetRect.left - containerRect.left;
+            const targetTop = targetRect.top - containerRect.top;
+
+            // 3. Fire requestAnimationFrame via modern CSS Web Animations API
+            const animation = token.animate([
+                {
+                    left: `${inputRect.left - containerRect.left}px`,
+                    top: `${inputRect.top - containerRect.top}px`,
+                    width: `${inputRect.width}px`,
+                    height: `${inputRect.height}px`,
+                    borderRadius: '10px',
+                    opacity: 0.6
+                },
+                {
+                    left: `${targetLeft}px`,
+                    top: `${targetTop}px`,
+                    width: `${targetRect.width}px`,
+                    height: `${targetRect.height}px`,
+                    borderRadius: '14px 14px 2px 14px',
+                    opacity: 1
+                }
+            ], {
+                duration: 280, // Snappy Telegram timings 
+                easing: 'cubic-bezier(0.25, 1, 0.5, 1)', // Smooth deceleration curve
+                fill: 'forwards'
+            });
+
+            // 4. Clean up mock elements once target boundary hits home
+            animation.onfinish = () => {
+                token.remove();
+                targetBubble.style.opacity = '1';
+            };
+        }
+
+        async function sendMessage() {
+            const messageText = chatInput.value.trim();
+            if (!messageText) return;
+
+            // Create target bubble first to fetch architectural rendering bounds
+            const userBubble = appendMessage(messageText, 'user-message');
+
+            // Trigger the flight physics immediately
+            animateMessageFly(messageText, userBubble);
+
+            chatInput.value = '';
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            const loadingId = appendLoading();
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            try {
+                const response = await fetch(BACKEND_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: messageText })
+                });
+
+                const data = await response.json();
+                document.getElementById(loadingId).remove();
+
+                if (data.response) {
+                    appendMessage(data.response, 'bot-message');
+                } else {
+                    appendMessage("I'm having trouble fetching details right now.", 'bot-message');
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById(loadingId).remove();
+                appendMessage("Our automated assistant is currently undergoing scheduled maintenance. To resolve your issue immediately, please connect directly with our Store Manager via WhatsApp: https://wa.me/919999999999?text=Hi,%20I%20need%20help%20with%20my%20Vastra%20order.", 'bot-message');
+            }
+
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function appendMessage(text, className) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message', className);
+
+            // Sanitize text to prevent XSS, then format URLs to clickable links
+            const sanitizedText = text
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+
+            const formattedText = sanitizedText.replace(
+                /(https?:\/\/[^\s]+)/g,
+                '<a href="$1" target="_blank" style="color: var(--accent-blue); text-decoration: underline; font-weight: 500;">$1</a>'
+            );
+
+            messageDiv.innerHTML = formattedText;
+            chatMessages.appendChild(messageDiv);
+            return messageDiv; // Return element node reference for vector parsing
+        }
+
+        function appendLoading() {
+            const loadingId = 'loading-' + Date.now();
+            const loadingDiv = document.createElement('div');
+            loadingDiv.classList.add('message', 'bot-message');
+            loadingDiv.id = loadingId;
+            loadingDiv.innerHTML = `<div class="typing-indicator"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`;
+            chatMessages.appendChild(loadingDiv);
+            return loadingId;
+        }
+
+        async function sendQuickReply(text, btnEl) {
+            // Fix: Turant button se focus hata do taaki Enter press se yeh dobara trigger na ho
+            if (btnEl) btnEl.blur();
+
+            // 1. UI par user ka quick reply text bubble append karo
+            appendMessage(text, 'user-message');
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            // 2. Input box ko clear karo aur focus do taaki user aage type kar sake
+            chatInput.value = '';
+            chatInput.focus();
+
+            const loadingId = appendLoading();
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            try {
+                // 3. Direct backend API ko hit karo bina message input ko chhede
+                const response = await fetch(BACKEND_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: text })
+                });
+
+                const data = await response.json();
+                document.getElementById(loadingId).remove();
+
+                // 4. Bot ka response screen par append karo
+                if (data.response) {
+                    appendMessage(data.response, 'bot-message');
+                } else {
+                    appendMessage("I'm having trouble fetching details right now.", 'bot-message');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById(loadingId).remove();
+                appendMessage("Our automated assistant is currently undergoing scheduled maintenance. To resolve your issue immediately, please connect directly with our Store Manager via WhatsApp: https://wa.me/919999999999?text=Hi,%20I%20need%20help%20with%20my%20Vastra%20order.", 'bot-message');
+            }
+
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        sendBtn.addEventListener('click', sendMessage);
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+    </script>
+</body>
+
+</html>
