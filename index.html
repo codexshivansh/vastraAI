@@ -448,15 +448,9 @@
         const inputArea = document.getElementById('inputArea');
 
         // ============================================================
-        // SMART BACKEND URL DETECTION
-        // Desktop: uses 127.0.0.1 (localhost)
-        // Mobile on same WiFi: uses the computer's LAN IP automatically
+        // PRODUCTION BACKEND URL (Render Cloud)
         // ============================================================
-        const LAN_IP = '172.16.39.124'; // Mac ka real LAN IP
-        const isMobile = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent);
-        const BACKEND_URL = isMobile
-            ? `http://${LAN_IP}:8000/chat`
-            : 'http://127.0.0.1:8000/chat';
+        const BACKEND_URL = 'https://vastra-backend.onrender.com/chat';
 
         chatLauncher.addEventListener('click', () => {
             chatWindow.classList.toggle('active');
