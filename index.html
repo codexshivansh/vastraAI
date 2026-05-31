@@ -373,7 +373,6 @@
 
 <body>
 
-    <!-- Dummy Website Markup -->
     <header>
         <div class="logo">VASTRA</div>
         <nav>
@@ -389,7 +388,6 @@
             more.</p>
     </section>
 
-    <!-- FLOATING CHAT WIDGET INTERFACE -->
     <div class="chat-widget-launcher" id="chatLauncher">
         <span class="launcher-robot-logo">🤖</span>
         <span class="launcher-text">Vastra AI</span>
@@ -404,7 +402,6 @@
             <button class="close-btn" id="closeBtn">&times;</button>
         </div>
 
-        <!-- Messages Area Container for Layer Coordinates -->
         <div class="chat-messages-container" id="messagesContainer">
             <div class="chat-messages" id="chatMessages">
                 <div class="message bot-message">Welcome to Vastra! How can I help you with your order status or returns
@@ -448,9 +445,9 @@
         const inputArea = document.getElementById('inputArea');
 
         // ============================================================
-        // PRODUCTION BACKEND URL (Render Cloud)
+        // PRODUCTION BACKEND URL (Render Cloud - Updated Successfully)
         // ============================================================
-        const BACKEND_URL = 'https://vastra-backend.onrender.com/chat';
+        const BACKEND_URL = 'https://vastra-backend-jher.onrender.com/chat';
 
         chatLauncher.addEventListener('click', () => {
             chatWindow.classList.toggle('active');
@@ -466,17 +463,14 @@
 
         // Telegram Custom Fly Mechanics Engine
         function animateMessageFly(text, targetBubble) {
-            // 1. Get positions of Input Deck and the newly generated target bubble
             const containerRect = messagesContainer.getBoundingClientRect();
             const inputRect = chatInput.getBoundingClientRect();
             const targetRect = targetBubble.getBoundingClientRect();
 
-            // 2. Spawn a lightweight pseudo token matching styling
             const token = document.createElement('div');
             token.classList.add('flying-token');
             token.innerText = text;
 
-            // Set initial location (Exactly where the input bar sits right now)
             token.style.left = `${inputRect.left - containerRect.left}px`;
             token.style.top = `${inputRect.top - containerRect.top}px`;
             token.style.width = `${inputRect.width}px`;
@@ -485,14 +479,11 @@
 
             messagesContainer.appendChild(token);
 
-            // Hide real bubble temporarily while the animation flies through space
             targetBubble.style.opacity = '0';
 
-            // Calculate exact target delta positions inside viewport limits
             const targetLeft = targetRect.left - containerRect.left;
             const targetTop = targetRect.top - containerRect.top;
 
-            // 3. Fire requestAnimationFrame via modern CSS Web Animations API
             const animation = token.animate([
                 {
                     left: `${inputRect.left - containerRect.left}px`,
@@ -511,12 +502,11 @@
                     opacity: 1
                 }
             ], {
-                duration: 280, // Snappy Telegram timings 
-                easing: 'cubic-bezier(0.25, 1, 0.5, 1)', // Smooth deceleration curve
+                duration: 280,
+                easing: 'cubic-bezier(0.25, 1, 0.5, 1)',
                 fill: 'forwards'
             });
 
-            // 4. Clean up mock elements once target boundary hits home
             animation.onfinish = () => {
                 token.remove();
                 targetBubble.style.opacity = '1';
@@ -527,10 +517,7 @@
             const messageText = chatInput.value.trim();
             if (!messageText) return;
 
-            // Create target bubble first to fetch architectural rendering bounds
             const userBubble = appendMessage(messageText, 'user-message');
-
-            // Trigger the flight physics immediately
             animateMessageFly(messageText, userBubble);
 
             chatInput.value = '';
@@ -568,7 +555,6 @@
             const messageDiv = document.createElement('div');
             messageDiv.classList.add('message', className);
 
-            // Sanitize text to prevent XSS, then format URLs to clickable links
             const sanitizedText = text
                 .replace(/&/g, '&amp;')
                 .replace(/</g, '&lt;')
@@ -583,7 +569,7 @@
 
             messageDiv.innerHTML = formattedText;
             chatMessages.appendChild(messageDiv);
-            return messageDiv; // Return element node reference for vector parsing
+            return messageDiv;
         }
 
         function appendLoading() {
@@ -597,14 +583,11 @@
         }
 
         async function sendQuickReply(text, btnEl) {
-            // Fix: Turant button se focus hata do taaki Enter press se yeh dobara trigger na ho
             if (btnEl) btnEl.blur();
 
-            // 1. UI par user ka quick reply text bubble append karo
             appendMessage(text, 'user-message');
             chatMessages.scrollTop = chatMessages.scrollHeight;
 
-            // 2. Input box ko clear karo aur focus do taaki user aage type kar sake
             chatInput.value = '';
             chatInput.focus();
 
@@ -612,7 +595,6 @@
             chatMessages.scrollTop = chatMessages.scrollHeight;
 
             try {
-                // 3. Direct backend API ko hit karo bina message input ko chhede
                 const response = await fetch(BACKEND_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -622,7 +604,6 @@
                 const data = await response.json();
                 document.getElementById(loadingId).remove();
 
-                // 4. Bot ka response screen par append karo
                 if (data.response) {
                     appendMessage(data.response, 'bot-message');
                 } else {
